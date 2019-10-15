@@ -87,9 +87,10 @@ def main():
 
 
     # export result
+    names = [p.name for p in paths]
     with open(output_dir / "label.csv", "w") as f:
         writer = csv.writer(f)
-        writer.writerows(zip(paths, labels))
+        writer.writerows(zip(names, labels))
 
 
 if __name__ == "__main__":
