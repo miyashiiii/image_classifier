@@ -58,11 +58,15 @@ class ImageClassifyWindow:
         text = f"{self._current_index + 1}/{self.img_num} | {self._current_item.name} | {class_}"
         cv2.displayStatusBar(self.name, text)
 
-    def _update_window(self, is_next):
-        if is_next:
-            self._increment_index()
+    def _change_image(self, move_idx):
+        idx = self._current_index + move_idx
+        if idx <= 0:
+            self._current_index = 0
+        elif idx >= self.img_num - 1:
+            self._current_index = self.img_num - 1
         else:
-            self._decrement_index()
+            self._current_index = idx
+
         cv2.imshow(self.name, self._current_item.img)
         self._update_status_bar()
 
@@ -75,6 +79,10 @@ class ImageClassifyWindow:
         print("  [x]: delete label")
         print("  [j]: next image")
         print("  [k]: previous image")
+        print("  [f]: jump to 10 after image")
+        print("  [b]: jump to 10 before image")
+        print("  [g]: jump to first image")
+        print("  [e]: jump to last image")
         print("  [p]: print all labels")
         print("  [s]: save csv")
         print("  [q]: quit")
@@ -119,17 +127,25 @@ class ImageClassifyWindow:
                 cv2.imshow(self.name, self._current_item.img)
                 self._print_item(self._current_item)
                 time.sleep(0.5)
-                self._update_window(is_next=True)
+                self._change_image(1)
 
             elif chr_k == "j":
-                self._update_window(is_next=True)
+                self._change_image(1)
             elif chr_k == "k":
-                self._update_window(is_next=False)
+                self._change_image(-1)
+            elif chr_k == "f":
+                self._change_image(10)
+            elif chr_k == "b":
+                self._change_image(-10)
+            elif chr_k == "g":
+                self._change_image(-self.img_num)
+            elif chr_k == "e":
+                self._change_image(self.img_num)
             elif chr_k == "p":
                 self._print_all_items()
             elif chr_k == "x":
                 self._current_item.label = None
-                self._update_window(is_next=False)
+                self._change_image(0)
             elif chr_k == "s":
                 self.save_csv()
                 print("save csv to :", self.result_csv_path)
