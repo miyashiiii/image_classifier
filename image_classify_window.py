@@ -1,3 +1,4 @@
+import csv
 import time
 from dataclasses import dataclass
 from typing import List, Optional
@@ -15,7 +16,7 @@ class ImageClassifyWindow:
         img: np.ndarray
         label: Optional[int]
 
-    def __init__(self, img_paths, class_names, labels=None, name="ImageClassifyWindow"):
+    def __init__(self, img_paths, class_names, result_csv_path, labels=None, name="ImageClassifyWindow"):
         self.name: str = name
         self.items: List[_Item] = []
         self.img_num: int = len(img_paths)
@@ -24,7 +25,7 @@ class ImageClassifyWindow:
         self.class_num: int = len(class_names)
         for p, l in zip(img_paths, labels):
             self.items.append(self._Item(p.name, cv2.imread(str(p)), l))
-
+        self.result_csv_path = result_csv_path
         self._current_index = 0
 
     @property
@@ -75,6 +76,7 @@ class ImageClassifyWindow:
         print("  [j]: next image")
         print("  [k]: previous image")
         print("  [p]: print all labels")
+        print("  [s]: save csv")
         print("  [q]: quit")
         print("-" * 30)
         print()
@@ -86,6 +88,7 @@ class ImageClassifyWindow:
         self._print_usage()
 
     def _print_item(self, item):
+
         print(f"name: {item.name}, label:{self._get_class_name(item.label)}")
 
     def _print_all_items(self):
@@ -95,6 +98,12 @@ class ImageClassifyWindow:
             self._print_item(item)
         print("-" * 30)
         print()
+
+    def save_csv(self):
+        names = [item.name for item in self.items]
+        with open(self.result_csv_path, "w", encoding="utf_8_sig") as f:
+            writer = csv.writer(f)
+            writer.writerows(zip(names, self.labels))
 
     def show(self) -> List[Optional[int]]:
         self._initialize_window()
@@ -121,4 +130,7 @@ class ImageClassifyWindow:
             elif chr_k == "x":
                 self._current_item.label = None
                 self._update_window(is_next=False)
+            elif chr_k == "s":
+                self.save_csv()
+                print("save csv to :", self.result_csv_path)
         return self.labels

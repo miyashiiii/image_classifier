@@ -11,7 +11,7 @@ def read_csv(csv_path):
     if not csv_path.is_file():
         return
 
-    with open(csv_path) as f:
+    with open(csv_path, encoding="utf-8-sig") as f:
         reader = csv.reader(f)
         rows = [row for row in reader]
     return rows
@@ -56,6 +56,7 @@ def main():
     # output dir
     output_dir = Path(args.o) / input_dir.name
     output_dir.mkdir(parents=True, exist_ok=True)
+    result_csv_path = output_dir / "label.csv"
 
     # search images
     extensions = [".jpg", ".jpeg", ".JPG"]
@@ -71,26 +72,23 @@ def main():
     paths.sort()
 
     # show window
-    labels = ImageClassifyWindow(paths, class_names, labels).show()
+    window = ImageClassifyWindow(paths, class_names, result_csv_path, labels)
+    window.show()
     cv2.destroyAllWindows()
 
     # print to stdout
     print()
-    if None in labels:
+    if None in window.labels:
         print("not classified:")
         for p, l in zip(paths, labels):
             if l is None:
                 print(f"  {p.name}")
 
     print()
-    print("result export to:", output_dir)
-
+    print("result export to:", result_csv_path)
 
     # export result
-    names = [p.name for p in paths]
-    with open(output_dir / "label.csv", "w") as f:
-        writer = csv.writer(f)
-        writer.writerows(zip(names, labels))
+    window.save_csv()
 
 
 if __name__ == "__main__":
