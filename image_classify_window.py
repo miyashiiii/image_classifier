@@ -10,6 +10,7 @@ import regex as re
 
 class ImageClassifyWindow:
     NO_CLASS_STR = "no class"
+    WINDOW_WIDTH = 500
 
     @dataclass
     class _Item:
@@ -25,7 +26,10 @@ class ImageClassifyWindow:
         self.class_names: List[str] = class_names
         self.class_num: int = len(class_names)
         for p, l in zip(img_paths, labels):
-            self.items.append(self._Item(p.name, cv2.imread(str(p)), l))
+            img = cv2.imread(str(p))
+            h, w, _ = img.shape
+            img = cv2.resize(img, (self.WINDOW_WIDTH, h * self.WINDOW_WIDTH // w))
+            self.items.append(self._Item(p.name, img, l))
         self.result_csv_path = result_csv_path
         self._current_index = 0
 
