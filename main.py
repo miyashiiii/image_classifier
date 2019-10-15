@@ -23,7 +23,7 @@ def main():
     parser.add_argument("-i", help="image dir", default="image")
     parser.add_argument("-c", help="class names csv path", default="class_names.csv")
     parser.add_argument("-l", help="label csv path", default="label.csv")
-    parser.add_argument("-o", help="output dir", default="result")
+    parser.add_argument("-o", help="output dir")
     args = parser.parse_args()
 
     # input_dir
@@ -47,14 +47,20 @@ def main():
     # labels
     labels_str = read_csv(input_dir / args.l) if args.l else None
     labels = []
-    for l in labels_str:
-        if not l[1]:
-            labels.append(None)
-            continue
-        labels.append(int(l[1]))
+    if labels_str:
+        for l in labels_str:
+            if not l[1]:
+                labels.append(None)
+                continue
+            labels.append(int(l[1]))
+    else:
+        print("label csv not found: ", input_dir / args.l)
 
     # output dir
-    output_dir = Path(args.o) / input_dir.name
+    if not args.o:
+        output_dir = input_dir
+    else:
+        output_dir = Path(args.o)
     output_dir.mkdir(parents=True, exist_ok=True)
     result_csv_path = output_dir / "label.csv"
 
