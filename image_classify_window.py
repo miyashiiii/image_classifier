@@ -5,6 +5,7 @@ from typing import List, Optional
 
 import cv2
 import numpy as np
+import regex as re
 
 
 class ImageClassifyWindow:
@@ -54,8 +55,13 @@ class ImageClassifyWindow:
         self._current_index -= 1
 
     def _update_status_bar(self):
+        # 漢字等の文字があるとdisplayStatusBarがうまくいかないので置換
+        name = self._current_item.name
+        p = re.compile(r'[\p{Script=Han}〜]+')
+        name = re.sub(p, "_", name)
+
         class_ = self._get_class_name(self._current_item.label)
-        text = f"{self._current_index + 1}/{self.img_num} | {self._current_item.name} | {class_}"
+        text = f"{self._current_index + 1}/{self.img_num} | {name} | {class_}"
         cv2.displayStatusBar(self.name, text)
 
     def _change_image(self, move_idx):
