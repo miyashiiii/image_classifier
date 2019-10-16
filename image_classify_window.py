@@ -8,33 +8,31 @@ import numpy as np
 import regex as re
 
 
+@dataclass
+class ImageItem:
+    name: str
+    img: np.ndarray
+    label: Optional[int]
+
+
 class ImageClassifyWindow:
     NO_CLASS_STR = "no class"
     WINDOW_WIDTH = 500
 
-    @dataclass
-    class _Item:
-        name: str
-        img: np.ndarray
-        label: Optional[int]
-
-    def __init__(self, img_paths, class_names, result_csv_path, labels=None, name="ImageClassifyWindow"):
+    def __init__(self, items: List[ImageItem], class_names, result_csv_path, name="ImageClassifyWindow"):
         self.name: str = name
-        self.items: List[_Item] = []
-        self.img_num: int = len(img_paths)
-        labels = labels if labels is not None else [None] * self.img_num
+        self.img_num: int = len(items)
+        self.items = items
+        for item in self.items:
+            h, w, _ = item.img.shape
+            item.img = cv2.resize(item.img, (self.WINDOW_WIDTH, h * self.WINDOW_WIDTH // w))
         self.class_names: List[str] = class_names
         self.class_num: int = len(class_names)
-        for p, l in zip(img_paths, labels):
-            img = cv2.imread(str(p))
-            h, w, _ = img.shape
-            img = cv2.resize(img, (self.WINDOW_WIDTH, h * self.WINDOW_WIDTH // w))
-            self.items.append(self._Item(p.name, img, l))
         self.result_csv_path = result_csv_path
         self._current_index = 0
 
     @property
-    def _current_item(self) -> _Item:
+    def _current_item(self) -> ImageItem:
         return self.items[self._current_index]
 
     @property

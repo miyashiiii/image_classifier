@@ -4,7 +4,7 @@ from pathlib import Path
 
 import cv2
 
-from image_classify_window import ImageClassifyWindow
+from image_classify_window import ImageClassifyWindow, ImageItem
 
 
 def read_csv(csv_path):
@@ -46,13 +46,13 @@ def main():
 
     # labels
     labels_str = read_csv(input_dir / args.l) if args.l else None
-    labels = []
+    labels = {}
     if labels_str:
         for l in labels_str:
             if not l[1]:
-                labels.append(None)
+                labels[l[0]] = None
                 continue
-            labels.append(int(l[1]))
+            labels[l[0]] = int(l[1])
     else:
         print("label csv not found: ", input_dir / args.l)
 
@@ -76,9 +76,15 @@ def main():
         return
 
     paths.sort()
+    items = []
 
-    # show window
-    window = ImageClassifyWindow(paths, class_names, result_csv_path, labels)
+    for p in paths:
+        img = cv2.imread(str(p))
+        label = labels.get(p.name)
+        items.append(ImageItem(p.name, img, label))
+
+        # show window
+    window = ImageClassifyWindow(items, class_names, result_csv_path)
     window.show()
     cv2.destroyAllWindows()
 
