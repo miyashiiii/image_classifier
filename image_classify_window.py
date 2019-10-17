@@ -92,6 +92,7 @@ class ImageClassifyWindow:
         print("  [g]: jump to first image")
         print("  [e]: jump to last image")
         print("  [p]: print all labels")
+        print("  [u]: print usage")
         print("  [s]: save csv")
         print("  [q]: save and quit")
         print("  [esc]: quit (no save)")
@@ -154,6 +155,8 @@ class ImageClassifyWindow:
                 self._change_image(-self.img_num)
             elif chr_k == "e":
                 self._change_image(self.img_num)
+            elif chr_k == "u":
+                self._print_usage()
             elif chr_k == "p":
                 self._print_all_items()
             elif chr_k == "x":
