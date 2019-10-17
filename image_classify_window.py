@@ -93,7 +93,8 @@ class ImageClassifyWindow:
         print("  [e]: jump to last image")
         print("  [p]: print all labels")
         print("  [s]: save csv")
-        print("  [q]: quit")
+        print("  [q]: save and quit")
+        print("  [esc]: quit (no save)")
         print("-" * 30)
         print()
 
@@ -104,7 +105,6 @@ class ImageClassifyWindow:
         self._print_usage()
 
     def _print_item(self, item):
-
         print(f"name: {item.name}, label:{self._get_class_name(item.label)}")
 
     def _print_all_items(self):
@@ -128,6 +128,11 @@ class ImageClassifyWindow:
             k = cv2.waitKey() & 0xFF
             chr_k = chr(k)
             if chr_k == "q":
+                cv2.destroyWindow(self.name)
+                self.save_csv()
+                print("result export to:", self.result_csv_path)
+                break
+            elif chr_k == "\x1b":
                 cv2.destroyWindow(self.name)
                 break
             elif chr_k in [str(i) for i in range(self.class_num)]:
