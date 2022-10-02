@@ -3,7 +3,7 @@
 <img src="asset/screenshot.png" width="320px" alt="screenshot">
 
 
-## Usage
+## start command
 ```
 python main.py <input dir> \
   -i <image dir> \
@@ -11,6 +11,7 @@ python main.py <input dir> \
   -l <label csv path> \
   -o <output dir>
 ```  
+
 example:  
 ```
 python main.py sample \
@@ -19,12 +20,19 @@ python main.py sample \
  -l label.csv \
  -o result
 ```
-### Keymap
+
+### usage
+- Exec start command, then open the window and display first image. 
+- You can classify the image by pressing number key.
+- Labels are saved in a csv.
+
+#### Keymap
 ```
   [number key]: classify
-  [x]: delete label
+  [x]: remove label of current file
   [j]: next image
   [k]: previous image
-  [p]: print all labels
+  [p]: print label of all images
+  [s]: save csv
   [q]: quit
 ```
